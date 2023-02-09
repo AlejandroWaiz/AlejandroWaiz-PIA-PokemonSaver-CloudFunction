@@ -1,77 +1,35 @@
 package datasaver
 
 import (
-	"log"
+	"context"
+	"errors"
 	"os"
-	"strings"
 
 	"github.com/AlejandroWaiz/PIA-PokemonSaver-CloudFunction/model"
 )
 
-var arrayOfPokemons []model.Pokemon
-var pokemonMold model.Pokemon
+func (s *SaverImplementation) SaveManyPokemon(Pokemons []model.Pokemon) (map[string]string, error) {
 
-func (s *SaverImplementation) SaveAllPokemons() ([]model.Pokemon, []error) {
+	ctx := context.Background()
 
-	allPokemonExcelSheets := os.Getenv("pokemon_excel_sheetnames")
+	var notSavedPokemons = make(map[string]string)
 
-	arrayOfPokemonSheetsFromExcel := strings.Split(allPokemonExcelSheets, ",")
+	for _, pokemon := range Pokemons {
 
-	var arrayOfErrors []error
-
-	//Por cada hoja del excel de Pokemons se hará una iteración, recorriendo el documento en su totalidad.
-	for _, thisSheet := range arrayOfPokemonSheetsFromExcel {
-
-		allRows, err := s.pokemonsExcelFile.GetRows(thisSheet)
+		_, _, err := s.client.Collection(os.Getenv("Pokemon_collection")).Add(ctx, pokemon)
 
 		if err != nil {
-			arrayOfErrors = append(arrayOfErrors, err)
-			break
-		}
-
-		for i := range allRows {
-
-			//Se ignora la primera columna, donde va el nombre de las columnas eg: ID, Name, Type, etc...
-			if i == 0 {
-				continue
-			}
-
-			//Aqui se itera sobre las columnas, tomando el valor de cada una y asignandola a una struct molde, la cual se almacena
-			//en un array de pokemones el cual será entregado al adaptador de salida para ser almacenado.
-			for _, onlyColumns := range allRows {
-
-				for columnPosition, columnValue := range onlyColumns {
-
-					err := assignValueFromDatabaseToPokemonMold(pokemonMold, columnPosition, columnValue)
-
-					if err != nil {
-
-						log.Printf("Err assigning value %v from excel to pokemon: %v ", columnValue, err)
-
-						arrayOfErrors = append(arrayOfErrors, err)
-
-						break
-
-					}
-
-				}
-
-			}
-
-			arrayOfPokemons = append(arrayOfPokemons, pokemonMold)
-
-			pokemonMold.ResetStruct()
-
-			log.Printf("%#v", pokemonMold)
-
+			notSavedPokemons[pokemon.Name] = err.Error()
 		}
 
 	}
 
-	if len(arrayOfErrors) > 0 {
-		return nil, arrayOfErrors
+	if len(notSavedPokemons) > 0 {
+
+		return notSavedPokemons, errors.New("Error saving some pokemons to database")
+
 	}
 
-	return arrayOfPokemons, nil
+	return nil, nil
 
 }
