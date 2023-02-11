@@ -1,14 +1,15 @@
 package model
 
 type Pokemon struct {
-	ID              string
-	Name            string
-	Pasive          string
-	Stage           int
-	HP              int
-	HpLevelBonus    string
-	Speed           int
-	SpeedLevelBonus string
+	ID              interface{}
+	Name            interface{}
+	Type            interface{}
+	Pasive          interface{}
+	Stage           interface{}
+	HP              interface{}
+	HpLevelBonus    interface{}
+	Speed           interface{}
+	SpeedLevelBonus interface{}
 	Movements       []map[string]string
 	Proficiencies
 }

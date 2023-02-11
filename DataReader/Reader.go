@@ -2,7 +2,7 @@ package datareader
 
 import (
 	"fmt"
-	"os"
+	"log"
 
 	"github.com/AlejandroWaiz/PIA-PokemonSaver-CloudFunction/model"
 	"github.com/xuri/excelize/v2"
@@ -16,12 +16,13 @@ type ReaderInterface interface {
 	ReadAllPokemons() ([]model.Pokemon, []error)
 }
 
-func GetExcelAdapterImplementation() (ReaderInterface, error) {
+func GetExcelAdapterImplementation(fileName string) (ReaderInterface, error) {
 
-	pokemonFile, err := excelize.OpenFile(os.Getenv("pokemon_excel_filename"))
+	pokemonFile, err := excelize.OpenFile(fileName)
 
 	if err != nil {
-		return &ReaderImplementation{}, fmt.Errorf("Error getting %v file: %v", os.Getenv("pokemon_excel_filename"), err)
+		log.Printf("Error getting %v file: %v", fileName, err)
+		return &ReaderImplementation{}, fmt.Errorf("Error getting %v file: %v", fileName, err)
 	}
 
 	readerImplementation := ReaderImplementation{pokemonsExcelFile: pokemonFile}

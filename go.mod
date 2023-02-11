@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/firestore v1.9.0
+	github.com/joho/godotenv v1.5.1
 	github.com/xuri/excelize/v2 v2.7.0
 	google.golang.org/api v0.109.0
 )

@@ -11,7 +11,7 @@ import (
 var arrayOfPokemons []model.Pokemon
 var pokemonMold model.Pokemon
 
-func (s *ReaderImplementation) ReadAllPokemons() ([]model.Pokemon, []error) {
+func (r *ReaderImplementation) ReadAllPokemons() ([]model.Pokemon, []error) {
 
 	allPokemonExcelSheets := os.Getenv("pokemon_excel_sheetnames")
 
@@ -22,7 +22,7 @@ func (s *ReaderImplementation) ReadAllPokemons() ([]model.Pokemon, []error) {
 	//Por cada hoja del excel de Pokemons se hará una iteración, recorriendo el documento en su totalidad.
 	for _, thisSheet := range arrayOfPokemonSheetsFromExcel {
 
-		allRows, err := s.pokemonsExcelFile.GetRows(thisSheet)
+		allRows, err := r.pokemonsExcelFile.GetRows(thisSheet)
 
 		if err != nil {
 			arrayOfErrors = append(arrayOfErrors, err)
@@ -62,13 +62,12 @@ func (s *ReaderImplementation) ReadAllPokemons() ([]model.Pokemon, []error) {
 
 			pokemonMold.ResetStruct()
 
-			log.Printf("%#v", pokemonMold)
-
 		}
 
 	}
 
 	if len(arrayOfErrors) > 0 {
+		log.Printf("Err reading pokemons: %v", arrayOfErrors)
 		return nil, arrayOfErrors
 	}
 

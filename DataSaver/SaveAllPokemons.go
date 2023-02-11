@@ -16,10 +16,10 @@ func (s *SaverImplementation) SaveManyPokemon(Pokemons []model.Pokemon) (map[str
 
 	for _, pokemon := range Pokemons {
 
-		_, _, err := s.client.Collection(os.Getenv("Pokemon_collection")).Add(ctx, pokemon)
+		_, _, err := s.client.Collection(os.Getenv("collectionName_fromFirestore_OfPokemons")).Add(ctx, pokemon)
 
 		if err != nil {
-			notSavedPokemons[pokemon.Name] = err.Error()
+			notSavedPokemons[pokemon.Name.(string)] = err.Error()
 		}
 
 	}
