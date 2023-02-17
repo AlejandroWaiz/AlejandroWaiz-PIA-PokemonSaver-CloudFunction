@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	datareader "github.com/AlejandroWaiz/PIA-PokemonSaver-CloudFunction/DataReader"
@@ -17,9 +18,11 @@ func main() {
 
 	godotenv.Load(".env")
 
+	ctx := context.Background()
 	fileName := "Pokemon.xlsx"
+	bucketName := "bucket-for-save-pokemon"
 
-	reader, err := datareader.GetExcelAdapterImplementation(fileName)
+	reader, err := datareader.GetExcelAdapterImplementation(ctx, fileName, bucketName)
 
 	if err != nil {
 		log.Println(err)
